@@ -14,6 +14,15 @@ npm run deploy -- -e 1-12-2
 npm run deploy -- -e 1-16-5
 ```
 
+【注意点】
+- バージョンごとに動作するコードが異なるため、それぞれブランチを切り替えた上で'npm run deploy'すること
+- Mod側のビルドは'gradlew build'で実行可能
+- Modのバージョン指定は'gradle.properties'に記載してある'mod_version'を変更すること
+  - バージョンはセマンティックバージョニングを採用する必要があるようだが、以下のような形式であればOK
+    - '1.0.0+mc1.20.1'
+    - 上記の'+mc1.20.1'部分はマインクラフトのバージョンを示している
+
+
 [![Build Status](https://travis-ci.com/LLK/scratch-gui.svg?token=Yfq2ryN1BwaxDME69Lnc&branch=master)](https://travis-ci.com/LLK/scratch-gui)
 [![Greenkeeper badge](https://badges.greenkeeper.io/LLK/scratch-gui.svg)](https://greenkeeper.io/)
 
