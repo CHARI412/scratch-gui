@@ -7,21 +7,207 @@
   <meta name="google" value="notranslate">
   <link rel="shortcut icon" href="static/favicon.ico">
   <title>
-    Scratch 3.0 GUI
+    Minecratch 1.20.1
   </title>
-  
-      <!-- Global site tag (gtag.js) - Google Analytics -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-EG3CDDF14D"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
 
-        gtag('config', 'G-EG3CDDF14D');
-      </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EG3CDDF14D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-EG3CDDF14D');
+  </script>
+  <style>
+    /* ===== 調整可能な設定値 ===== */
+    :root {
+      /* ブロックエリア（パレット）の白みオーバーレイの透明度 (0.0〜1.0) */
+      /* 0.0 = 完全に透明（白みなし）, 1.0 = 完全に白い */
+      --flyout-overlay-opacity: 0.2;
+
+      /* コードエリア（ワークスペース）の白みオーバーレイの透明度 (0.0〜1.0) */
+      /* 0.0 = 完全に透明（白みなし）, 1.0 = 完全に白い */
+      --workspace-overlay-opacity: 0.7;
+
+      /* ブロックエリア（パレット）の幅 (デフォルト: 250px、1.5倍: 375px) */
+      --flyout-width: 258px;
+    }
+
+    /* ステージ削除・全体最大化（継続） */
+    [class*="gui_stage-and-target-wrapper"],
+    [class*="gui_tab-list"] {
+      display: none !important;
+    }
+
+    [class*="gui_body-wrapper"],
+    [class*="gui_flex-wrapper"] {
+      width: 100% !important;
+      display: flex !important;
+    }
+
+    [class*="gui_flex-wrapper"] {
+      flex-direction: row !important;
+      height: calc(100vh - 48px) !important;
+    }
+
+    [class*="gui_blocks-wrapper"] {
+      display: block !important;
+      flex-grow: 1 !important;
+      height: 100% !important;
+    }
+
+    /* ===== マインクラフト風テクスチャ ===== */
+
+    /* 1. メニューバー - 石ブロック風テクスチャ */
+    [class*="menu-bar_menu-bar"] {
+      background-image: url('static/assets/stone_block_texture.png') !important;
+      background-size: 64px 64px !important;
+      background-repeat: repeat !important;
+      border-top: 3px solid #2d5a1b !important;
+      border-bottom: 3px solid #1a3d10 !important;
+      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), inset 0 -2px 4px rgba(0, 0, 0, 0.3) !important;
+      image-rendering: pixelated !important;
+    }
+
+    /* メニューバーのテキストを見やすくする */
+    [class*="menu-bar_menu-bar"] * {
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    /* 2. チュートリアル、共有する、プロジェクトページを見るを非表示 */
+    [class*="menu-bar_account-info-group"],
+    [class*="menu-bar_divider"],
+    [class*="share-button_share-button"],
+    [class*="menu-bar_menu-bar-item"][class*="community-button"],
+    [class*="community-button"],
+    [class*="see-project-page"] {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      opacity: 0 !important;
+    }
+
+    /* チュートリアルボタンを非表示 */
+    button[class*="action-menu_button"][aria-label*="Tutorials"],
+    button[class*="action-menu_button"][aria-label*="チュートリアル"],
+    [class*="tutorials-button"],
+    [class*="menu-bar_help-menu"] {
+      display: none !important;
+    }
+
+    /* 3. バックパック（画面下部）を完全に消す */
+    [class*="backpack_backpack-container"] {
+      display: none !important;
+    }
+
+    /* 4. コードエリア右上の半透明スプライト画像を消す */
+    [class*="gui_watermark"] {
+      display: none !important;
+    }
+
+    /* 5. コードエリア（パレット） - 白色の羊毛風テクスチャ */
+    /* SVGパターンが効かない場合のフォールバック */
+    .blocklySvg {
+      background-image: url('static/assets/White_Wool_texture.png') !important;
+      background-size: 64px 64px !important;
+      background-repeat: repeat !important;
+      image-rendering: pixelated !important;
+    }
+
+    /* コードエリアの白みオーバーレイ（調整可能） */
+    .blocklyMainBackground {
+      fill: #ffffff !important;
+      fill-opacity: var(--workspace-overlay-opacity) !important;
+    }
+
+    /* 6. ブロックエリア（パレット） - レッドストーンブロック風テクスチャ */
+    .blocklyFlyout {
+      background-image: url('static/assets/red_stone_block_texture.png') !important;
+      background-size: 64px 64px !important;
+      background-repeat: repeat !important;
+      image-rendering: pixelated !important;
+      width: var(--flyout-width) !important;
+    }
+
+    /* ブロックエリア（フライアウト）の幅を調整 */
+    .blocklyFlyoutBackground {
+      width: var(--flyout-width) !important;
+    }
+
+    /* スクロールバーの位置を調整 (幅の増加分だけ右に寄せる) */
+    .blocklyFlyout .blocklyScrollbarVertical {
+      transform: translateX(calc(var(--flyout-width) - 250px)) !important;
+    }
+
+    /* ブロックの表示範囲（SVG・クリップパス）を広げる */
+    .blocklyFlyout .blocklyWorkspaceSVG,
+    .blocklyFlyout svg,
+    .blocklyFlyout .blocklyBlockCanvas,
+    .blocklyFlyout .blocklyBubbleCanvas {
+      width: var(--flyout-width) !important;
+    }
+
+    /* クリップパスと内部要素の表示矩形を広げる */
+    .blocklyFlyout clipPath rect,
+    .blocklyFlyout .blocklyWorkspaceSVG rect {
+      width: var(--flyout-width) !important;
+    }
+
+    /* カテゴリメニューの背景もレッドストーンブロック風に */
+    [class*="blocks_blocks"]>div:first-child,
+    [class*="gui_blocks-wrapper"]>div:first-child {
+      background-image: url('static/assets/red_stone_block_texture.png') !important;
+      background-size: 64px 64px !important;
+      background-repeat: repeat !important;
+      image-rendering: pixelated !important;
+    }
+
+    /* ブロックカテゴリのスクロールパネル */
+    [class*="toolbox_toolbox"] {
+      background-image: url('static/assets/red_stone_block_texture.png') !important;
+      background-size: 64px 64px !important;
+      background-repeat: repeat !important;
+      image-rendering: pixelated !important;
+    }
+
+    /* ピクセルアート風のシャープなレンダリング */
+    img[src*="texture"],
+    [class*="menu-bar"],
+    .blocklySvg {
+      image-rendering: -moz-crisp-edges !important;
+      image-rendering: -webkit-crisp-edges !important;
+      image-rendering: pixelated !important;
+      image-rendering: crisp-edges !important;
+    }
+
+    /* ブロックエリアの白みオーバーレイ（調整可能） */
+    .blocklyFlyoutBackground {
+      fill: #ffffff !important;
+      fill-opacity: var(--flyout-overlay-opacity) !important;
+    }
+
+    /* ブロックエリアのカテゴリ名（動き、変数、Minecraftなど）の文字色を白色に */
+    .blocklyFlyoutLabelText {
+      fill: #ffffff !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+    }
+
+    /* 「変数を作る」「リストをつくる」「ブロックをつくる」ボタンの文字色を白色に */
+    .blocklyFlyoutButton .blocklyText {
+      fill: #ffffff !important;
+    }
+
+    /* 「変数を作る」「リストをつくる」「ブロックをつくる」ボタンのホバー時背景色を黒に */
+    .blocklyFlyoutButton:hover {
+      fill: #000000 !important;
+    }
+  </style>
 </head>
 
 <body>
-<script type="text/javascript" src="lib.min.js"></script><script type="text/javascript" src="chunks/gui.js"></script></body>
+  <script type="text/javascript" src="lib.min.js"></script>
+  <script type="text/javascript" src="chunks/gui.js"></script>
+</body>
 
 </html>
