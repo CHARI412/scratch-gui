@@ -3,11 +3,11 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=1280">
   <meta name="google" value="notranslate">
   <link rel="shortcut icon" href="static/favicon.ico">
   <title>
-    Minecratch 1.20.1
+    MineCratch 1.20.1
   </title>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -31,7 +31,7 @@
       --workspace-overlay-opacity: 0.7;
 
       /* ブロックエリア（パレット）の幅 (デフォルト: 250px、1.5倍: 375px) */
-      --flyout-width: 258px;
+      --flyout-width: 255px;
     }
 
     /* ステージ削除・全体最大化（継続） */
@@ -137,7 +137,7 @@
 
     /* スクロールバーの位置を調整 (幅の増加分だけ右に寄せる) */
     .blocklyFlyout .blocklyScrollbarVertical {
-      transform: translateX(calc(var(--flyout-width) - 250px)) !important;
+      transform: translateX(calc(var(--flyout-width))) !important;
     }
 
     /* ブロックの表示範囲（SVG・クリップパス）を広げる */
@@ -152,23 +152,6 @@
     .blocklyFlyout clipPath rect,
     .blocklyFlyout .blocklyWorkspaceSVG rect {
       width: var(--flyout-width) !important;
-    }
-
-    /* カテゴリメニューの背景もレッドストーンブロック風に */
-    [class*="blocks_blocks"]>div:first-child,
-    [class*="gui_blocks-wrapper"]>div:first-child {
-      background-image: url('static/assets/red_stone_block_texture.png') !important;
-      background-size: 64px 64px !important;
-      background-repeat: repeat !important;
-      image-rendering: pixelated !important;
-    }
-
-    /* ブロックカテゴリのスクロールパネル */
-    [class*="toolbox_toolbox"] {
-      background-image: url('static/assets/red_stone_block_texture.png') !important;
-      background-size: 64px 64px !important;
-      background-repeat: repeat !important;
-      image-rendering: pixelated !important;
     }
 
     /* ピクセルアート風のシャープなレンダリング */
@@ -202,10 +185,105 @@
     .blocklyFlyoutButton:hover {
       fill: #000000 !important;
     }
+
+    /* 拡張機能追加ボタンを非表示 (generic class targeting) */
+    /* Assuming button has class like 'extension-library_extension-button_...' or aria-label */
+    [class*="extension-library_extension-button"],
+    button[aria-label="Add Extension"],
+    button[aria-label="拡張機能を追加"] {
+      display: none !important;
+    }
+
+    /* チュートリアルメニュー完全非表示 */
+    [class*="menu-bar_help-menu"],
+    [aria-label="Tutorials"],
+    [aria-label="チュートリアル"] {
+      display: none !important;
+    }
+
+    /* ロゴのリンク無効化 (視覚的) */
+    [class*="menu-bar_scratch-logo"] {
+      pointer-events: none !important;
+      cursor: default !important;
+    }
+
+    /* ===== ドロップダウンメニューのスタイル変更 (ファイル・編集など) ===== */
+    [class*="menu_menu"] {
+      background-image: url('static/assets/stone_block_texture.png') !important;
+      background-size: 64px 64px !important;
+      background-repeat: repeat !important;
+      border: 3px solid #1a3d10 !important;
+      box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5) !important;
+      image-rendering: pixelated !important;
+    }
+
+    /* メニュー項目のテキスト */
+    [class*="menu_menu"] * {
+      color: #ffffff !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+    }
+
+    /* ホバー時のハイライト調整 (オプション) */
+    [class*="menu_menu-item"]:hover {
+      background-color: rgba(0, 0, 0, 0.3) !important;
+    }
   </style>
 </head>
 
 <body>
+  <script>
+    // ハック: 拡張機能を自動ロード & ロゴリンク無効化
+    (function () {
+      // 1. ロゴリンク無効化
+      // DOMが読み込まれたタイミングを狙う（やや遅延させる）
+      window.onload = function () {
+        setTimeout(function () {
+          var logo = document.querySelector('[class*="menu-bar_scratch-logo"]');
+          if (logo) {
+            logo.addEventListener('click', function (e) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            });
+            // 親の<a>タグがある場合
+            var parentLink = logo.closest('a');
+            if (parentLink) {
+              parentLink.href = 'javascript:void(0)';
+              parentLink.addEventListener('click', function (e) {
+                e.preventDefault();
+              });
+            }
+          }
+        }, 1000);
+      };
+
+      // 2. Minecraft拡張機能の自動ロード (URLパラメータリダイレクト)
+      // Scratchは ?extension=minecraft または ?extensionId=minecraft で起動時に拡張機能をロードする機能を持つ
+
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var EXTENSION_ID = 'minecraft'; // 拡張機能IDを確認済みであればここに。不明なら一旦 'minecraft' 等を試す。
+        // ※ 拡張機能の本当のIDが分からないとロードされません。'minecraft', 'extension', 'microbit' etc.
+        //   もしIDが間違っているとエラーになるかもですが、パラメータなしよりはマシです。
+
+        if (!params.has('extension') && !params.has('extensionId')) {
+          // パラメータを追加してリロード
+          // 無限ループを防ぐため、sessionStorageなども使えるが、
+          // 今回は simple にパラメータ有無だけで判断。
+
+          // 現在のURLを取得
+          var currentUrl = new URL(window.location.href);
+          currentUrl.searchParams.set('extension', EXTENSION_ID);
+
+          // リダイレクト (履歴に残さない場合は replace)
+          window.location.replace(currentUrl.toString());
+        }
+      } catch (e) {
+        console.error('Auto-load extension script error:', e);
+      }
+    })();
+  </script>
+
   <script type="text/javascript" src="lib.min.js"></script>
   <script type="text/javascript" src="chunks/gui.js"></script>
 </body>
