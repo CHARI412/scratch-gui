@@ -281,6 +281,91 @@
       } catch (e) {
         console.error('Auto-load extension script error:', e);
       }
+
+      // 3. 緑の旗と停止ボタンをメニューバーに移動
+      // ステージが非表示のため、ボタンも隠れてしまっているので、
+      // DOMツリー上でメニューバー直下に移動させて表示させる。
+      setInterval(function () {
+        try {
+          // 移動先のコンテナを作成（なければ）
+          // メニューバーを取得
+          var menuBar = document.querySelector('[class*="menu-bar_menu-bar"]');
+          if (!menuBar) return;
+
+          var buttonContainerId = 'custom-controls-container';
+          var buttonContainer = document.getElementById(buttonContainerId);
+
+          if (!buttonContainer) {
+            buttonContainer = document.createElement('div');
+            buttonContainer.id = buttonContainerId;
+            buttonContainer.style.display = 'flex';
+            buttonContainer.style.alignItems = 'center';
+            buttonContainer.style.position = 'absolute'; // 絶対配置にする
+            buttonContainer.style.left = '52%';
+            buttonContainer.style.top = '50%'; // 上下中央配置
+            buttonContainer.style.transform = 'translate(-50%, -50%)'; // 中心を基準にする
+            buttonContainer.style.zIndex = '1000';
+
+            // メニューバーに追加
+            // "左詰め" という要望なので、ロゴやファイルメニューの右側（= 空いているスペースの左端）に追加する。
+            // ロゴの後に挿入してみる。
+            var logo = menuBar.querySelector('[class*="menu-bar_scratch-logo"]');
+            if (logo && logo.nextSibling) {
+              // ロゴの次の要素の前（=ロゴの直後）に挿入... だが、
+              // 単純に appendChild しても、flex-direction: row なら右に追加される。
+              // 他の要素（ファイル、編集など）との兼ね合いがあるが、
+              // とりあえず appendChild してから order で調整するか、自然な位置（右側）に置くか。
+              // "空いているスペースに、左詰めで" -> 通常のメニュー項目の右側に配置されればOKと解釈。
+              // ただし、右端（アカウント情報など）よりは左に置きたい。
+              // アカウント情報はCSSで消しているので、実質的に右側は空いているはず。
+              menuBar.appendChild(buttonContainer);
+            } else {
+              menuBar.appendChild(buttonContainer);
+            }
+          }
+
+          // 緑の旗と停止ボタンを探す
+          // セレクタは Scratch 3.0 のクラス名規則に準拠
+          var greenFlag = document.querySelector('[class*="green-flag_green-flag"]');
+          var stopAll = document.querySelector('[class*="stop-all_stop-all"]');
+
+          // 緑の旗を移動
+          if (greenFlag && greenFlag.parentNode !== buttonContainer) {
+            buttonContainer.appendChild(greenFlag);
+            // スタイル調整（メニューバーに収まるサイズに）
+            greenFlag.style.width = '2rem';
+            greenFlag.style.height = '2rem';
+            greenFlag.style.padding = '0.25rem';
+            greenFlag.style.marginRight = '0.5rem';
+            greenFlag.style.cursor = 'pointer';
+            // 視認性向上: 不透明度100% + 白色縁取り/光彩
+            greenFlag.style.opacity = '1';
+            greenFlag.style.filter = 'drop-shadow(0 0 2px rgba(255,255,255,0.8))';
+            greenFlag.style.border = '2px solid rgba(255, 255, 255, 0.5)';
+            greenFlag.style.borderRadius = '50%';
+            greenFlag.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'; // 背景を少し暗くしてコントラスト比を上げる
+          }
+
+          // 停止ボタンを移動
+          if (stopAll && stopAll.parentNode !== buttonContainer) {
+            buttonContainer.appendChild(stopAll);
+            // スタイル調整
+            stopAll.style.width = '2rem';
+            stopAll.style.height = '2rem';
+            stopAll.style.padding = '0.25rem';
+            stopAll.style.cursor = 'pointer';
+            // 視認性向上: 不透明度100% + 白色縁取り/光彩
+            stopAll.style.opacity = '1';
+            stopAll.style.filter = 'drop-shadow(0 0 2px rgba(255,255,255,0.8))';
+            stopAll.style.border = '2px solid rgba(255, 255, 255, 0.5)';
+            stopAll.style.borderRadius = '50%';
+            stopAll.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+          }
+
+        } catch (e) {
+          console.error('Controls move script error:', e);
+        }
+      }, 500);
     })();
   </script>
 
