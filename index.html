@@ -9,19 +9,39 @@
   <title>
     Scratch 3.0 GUI
   </title>
-  
-      <!-- Global site tag (gtag.js) - Google Analytics -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-EG3CDDF14D"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
 
-        gtag('config', 'G-EG3CDDF14D');
-      </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EG3CDDF14D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-EG3CDDF14D');
+  </script>
+  <script>
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var EXTENSION_ID = 'minecraft';
+        // extensionId param is safer for some versions
+        if (!params.has('extension') && !params.has('extensionId')) {
+          var currentUrl = new URL(window.location.href);
+          currentUrl.searchParams.set('extensionId', EXTENSION_ID);
+          currentUrl.searchParams.set('extension', EXTENSION_ID); // Set both to be safe
+          window.location.replace(currentUrl.toString());
+        }
+      } catch (e) {
+        console.error('Auto-load extension script error:', e);
+      }
+    })();
+  </script>
 </head>
 
 <body>
-<script type="text/javascript" src="lib.min.js"></script><script type="text/javascript" src="chunks/gui.js"></script></body>
+
+  <script type="text/javascript" src="lib.min.js"></script>
+  <script type="text/javascript" src="chunks/gui.js"></script>
+</body>
 
 </html>

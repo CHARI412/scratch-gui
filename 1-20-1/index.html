@@ -19,6 +19,23 @@
 
     gtag('config', 'G-EG3CDDF14D');
   </script>
+  <script>
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var EXTENSION_ID = 'minecraft';
+        // extensionId param is safer for some versions
+        if (!params.has('extension') && !params.has('extensionId')) {
+          var currentUrl = new URL(window.location.href);
+          currentUrl.searchParams.set('extensionId', EXTENSION_ID);
+          currentUrl.searchParams.set('extension', EXTENSION_ID); // Set both to be safe
+          window.location.replace(currentUrl.toString());
+        }
+      } catch (e) {
+        console.error('Auto-load extension script error:', e);
+      }
+    })();
+  </script>
   <style>
     /* ===== 調整可能な設定値 ===== */
     :root {
@@ -58,6 +75,26 @@
     }
 
     /* ===== マインクラフト風テクスチャ ===== */
+
+    /* 0. ロード画面（背景） - 土ブロック風テクスチャ 完全適用 */
+    html,
+    body,
+    [class*="loader_background"] {
+      background-image: url('static/assets/dirt_block_texture.png') !important;
+      background-size: 64px 64px !important;
+      background-repeat: repeat !important;
+      background-color: #000 !important;
+      /* フォールバック */
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated !important;
+    }
+
+    /* ローディング画面の青いオーバーレイを消す */
+    [class*="loader_background"] {
+      background-color: transparent !important;
+    }
 
     /* 1. メニューバー - 石ブロック風テクスチャ */
     [class*="menu-bar_menu-bar"] {
@@ -257,30 +294,7 @@
         }, 1000);
       };
 
-      // 2. Minecraft拡張機能の自動ロード (URLパラメータリダイレクト)
-      // Scratchは ?extension=minecraft または ?extensionId=minecraft で起動時に拡張機能をロードする機能を持つ
 
-      try {
-        var params = new URLSearchParams(window.location.search);
-        var EXTENSION_ID = 'minecraft'; // 拡張機能IDを確認済みであればここに。不明なら一旦 'minecraft' 等を試す。
-        // ※ 拡張機能の本当のIDが分からないとロードされません。'minecraft', 'extension', 'microbit' etc.
-        //   もしIDが間違っているとエラーになるかもですが、パラメータなしよりはマシです。
-
-        if (!params.has('extension') && !params.has('extensionId')) {
-          // パラメータを追加してリロード
-          // 無限ループを防ぐため、sessionStorageなども使えるが、
-          // 今回は simple にパラメータ有無だけで判断。
-
-          // 現在のURLを取得
-          var currentUrl = new URL(window.location.href);
-          currentUrl.searchParams.set('extension', EXTENSION_ID);
-
-          // リダイレクト (履歴に残さない場合は replace)
-          window.location.replace(currentUrl.toString());
-        }
-      } catch (e) {
-        console.error('Auto-load extension script error:', e);
-      }
 
       // 3. 緑の旗と停止ボタンをメニューバーに移動
       // ステージが非表示のため、ボタンも隠れてしまっているので、
